@@ -755,3 +755,17 @@ button, input, select, textarea {
     color: #168653;
     background: #e4f8ec;
 }
+
+/* EVENT badge in Next Due sidebar */
+.upcoming-type.event {
+    display: inline-block;
+    width: fit-content;
+    padding: 4px 8px;
+    margin-top: 5px;
+    border-radius: 4px;
+    background: #e4f8ec;
+    color: #168653;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+}
