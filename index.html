@@ -1,126 +1,86 @@
+
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <title>HW Calendar</title>
-
     <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
+    <main class="app-layout">
 
-    <main>
-
-        <div class="calendar-container">
-
-            <div class="calendar-header">
-
-                <button id="previousMonth">&lt;</button>
-
-                <h2 id="monthYear"></h2>
-
-                <button id="nextMonth">&gt;</button>
-
+        <aside class="sidebar">
+            <div class="sidebar-brand">
+                <h1>HW Calendar</h1>
+                <p>School planner</p>
             </div>
 
+            <div id="sidebarControls"></div>
 
-            <div class="weekdays">
-
-                <div>MON</div>
-                <div>TUE</div>
-                <div>WED</div>
-                <div>THU</div>
-                <div>FRI</div>
-                <div>SAT</div>
-                <div>SUN</div>
-
+            <div class="sidebar-section">
+                <h3>NEXT DUE</h3>
+                <div id="upcomingEvents">
+                    <p class="empty-message">No upcoming events</p>
+                </div>
             </div>
 
+            <div class="sidebar-footer">
+                <span>School Calendar</span>
+            </div>
+        </aside>
 
-            <div id="calendar"></div>
+        <section class="main-content">
+            <div class="calendar-container">
 
-        </div>
+                <div class="calendar-header">
+                    <button id="previousMonth">&lt;</button>
+                    <h2 id="monthYear"></h2>
+                    <button id="nextMonth">&gt;</button>
+                </div>
+
+                <div class="weekdays">
+                    <div>MON</div>
+                    <div>TUE</div>
+                    <div>WED</div>
+                    <div>THU</div>
+                    <div>FRI</div>
+                    <div>SAT</div>
+                    <div>SUN</div>
+                </div>
+
+                <div id="calendar"></div>
+            </div>
+        </section>
 
     </main>
 
-
     <div id="eventOverlay" class="overlay">
-
         <div class="event-box">
-
-            <button
-                id="closeEvent"
-                class="close-button"
-            >
-                ×
-            </button>
-
+            <button id="closeEvent" class="close-button">×</button>
 
             <h2 id="selectedDate"></h2>
 
-
-            <label for="eventType">
-                Type
-            </label>
-
-
+            <label for="eventType">Type</label>
             <select id="eventType">
-
-                <option value="HW">
-                    Homework
-                </option>
-
-                <option value="PROJECT">
-                    Project
-                </option>
-
-                <option value="EXAM">
-                    Exam
-                </option>
-
+                <option value="HW">Homework</option>
+                <option value="PROJECT">Project</option>
+                <option value="EXAM">Exam</option>
             </select>
 
+            <label for="eventTitle">Title</label>
+            <input id="eventTitle" type="text"
+                placeholder="Example: Math homework">
 
-            <label for="eventTitle">
-                Title
-            </label>
+            <label for="eventDescription">Description</label>
+            <textarea id="eventDescription"
+                placeholder="Add details..."></textarea>
 
-
-            <input
-                id="eventTitle"
-                type="text"
-                placeholder="Example: Math homework"
-            >
-
-
-            <label for="eventDescription">
-                Description
-            </label>
-
-
-            <textarea
-                id="eventDescription"
-                placeholder="Add details..."
-            ></textarea>
-
-
-            <button
-                id="saveEvent"
-                class="save-button"
-            >
-                SAVE
-            </button>
-
+            <button id="saveEvent" class="save-button">SAVE</button>
         </div>
-
     </div>
 
-
-<script type="module" src="script.js"></script>
-
+    <script type="module" src="script.js"></script>
 </body>
-
 </html>
