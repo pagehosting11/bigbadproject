@@ -739,7 +739,8 @@ button, input, select, textarea {
 
 .sidebar-footer {
     font-size: 12px;
-    
+}
+
 /* General events - green */
 .event.general-event {
     border-left: 4px solid #22a06b;
@@ -750,8 +751,11 @@ button, input, select, textarea {
     color: #168653;
 }
 
+.event.general-event .event-title {
+    color: #166534;
+}
+
 /* EVENT label in Next Due sidebar */
-.upcoming-type.event,
 .upcoming-type.general-event {
     display: block;
     padding: 0;
