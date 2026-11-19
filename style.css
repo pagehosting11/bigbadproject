@@ -740,3 +740,18 @@ button, input, select, textarea {
 .sidebar-footer {
     font-size: 12px;
 }
+/* General events - green */
+.event.general-event {
+    border-left: 4px solid #22a06b;
+    background: #f0fff6;
+}
+
+.event.general-event .event-type {
+    color: #168653;
+}
+
+/* Next Due green label */
+.upcoming-type.event {
+    color: #168653;
+    background: #e4f8ec;
+}
