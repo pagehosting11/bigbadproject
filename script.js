@@ -373,8 +373,11 @@ function renderNextDue() {
 
         const type = document.createElement("div");
 
-        type.className =
-            "upcoming-type " + event.type.toLowerCase();
+type.className =
+    "upcoming-type " +
+    (event.type === "EVENT"
+        ? "general-event"
+        : event.type.toLowerCase());
 
         type.textContent =
             EVENT_TYPES[event.type]?.label || event.type;
