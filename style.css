@@ -739,7 +739,7 @@ button, input, select, textarea {
 
 .sidebar-footer {
     font-size: 12px;
-}
+    
 /* General events - green */
 .event.general-event {
     border-left: 4px solid #22a06b;
@@ -750,21 +750,14 @@ button, input, select, textarea {
     color: #168653;
 }
 
-/* Next Due green label */
-.upcoming-type.event {
-    color: #168653;
-    background: #e4f8ec;
-}
-
 /* EVENT badge in Next Due sidebar */
-.upcoming-type.event {
-    display: inline-block;
+.upcoming-type.general-event {
+    display: block;
     padding: 0;
     margin-top: 5px;
     background: transparent;
     border: none;
     color: #168653;
-    font-size: 11px;
-    font-weight: 600;
-    letter-spacing: 0.3px;
+    font-size: 12px;
+    font-weight: 700;
 }
