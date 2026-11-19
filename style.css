@@ -626,3 +626,59 @@ button, input, select, textarea {
         font-size: 10px;
     }
 }
+
+/* Smaller month heading */
+.calendar-header h2 {
+    font-size: 22px;
+    font-weight: 600;
+}
+
+/* Bigger calendar cells */
+#calendar .day {
+    min-height: 155px;
+    padding: 12px;
+}
+
+/* More readable date labels */
+.day-number {
+    font-size: 14px;
+    margin-bottom: 10px;
+}
+
+/* Bigger event cards */
+.event {
+    padding: 10px;
+    margin-top: 8px;
+}
+
+/* More readable event text */
+.event-title {
+    font-size: 14px;
+}
+
+.event-description {
+    font-size: 12px;
+    line-height: 1.5;
+}
+
+/* More space between calendar weekdays and dates */
+.weekdays {
+    margin-bottom: 8px;
+}
+
+.weekdays > div {
+    padding: 12px 0;
+    font-size: 12px;
+}
+
+/* Keep the calendar responsive */
+@media (max-width: 900px) {
+    #calendar .day {
+        min-height: 120px;
+        padding: 7px;
+    }
+
+    .event {
+        padding: 6px;
+    }
+}
