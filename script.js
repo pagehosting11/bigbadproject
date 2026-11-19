@@ -26,6 +26,10 @@ const EVENT_TYPES = {
     EXAM: {
         label: "EXAM",
         className: "exam"
+    },
+    EVENT: {
+        label: "EVENT",
+        className: "general-event"
     }
 };
 
