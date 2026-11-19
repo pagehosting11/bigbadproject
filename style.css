@@ -682,3 +682,61 @@ button, input, select, textarea {
         padding: 6px;
     }
 }
+
+/* Sidebar typography */
+.sidebar-brand h1 {
+    font-size: 24px;
+}
+
+.sidebar-brand p {
+    font-size: 14px;
+}
+
+.sidebar-section h3 {
+    font-size: 14px;
+}
+
+.sidebar-section {
+    font-size: 15px;
+}
+
+.sidebar label {
+    font-size: 13px;
+}
+
+#classSelector {
+    font-size: 15px;
+    padding: 11px;
+}
+
+#classStatus {
+    font-size: 12px;
+}
+
+#editButton,
+#logoutButton,
+#changePasswordButton {
+    font-size: 14px;
+    padding: 12px;
+}
+
+.upcoming-date {
+    font-size: 13px;
+}
+
+.upcoming-title {
+    font-size: 15px;
+    font-weight: 600;
+}
+
+.upcoming-type {
+    font-size: 12px;
+}
+
+.empty-message {
+    font-size: 14px;
+}
+
+.sidebar-footer {
+    font-size: 12px;
+}
