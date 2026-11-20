@@ -124,11 +124,12 @@ toolbar.innerHTML = `
 
     <div class="toolbar-right">
 
-        <button
-            id="addClassButton"
-            type="button"
-        >
+        <button id="addClassButton" type="button">
             + ADD CLASS
+        </button>
+
+        <button id="deleteClassButton" type="button">
+            DELETE CLASS
         </button>
 
         <button id="editButton" type="button">
@@ -160,6 +161,7 @@ const classSelector = document.getElementById("classSelector");
 const classStatus = document.getElementById("classStatus");
 
 const addClassButton = document.getElementById("addClassButton");
+const deleteClassButton = document.getElementById("deleteClassButton");
 const editButton = document.getElementById("editButton");
 const logoutButton = document.getElementById("logoutButton");
 
@@ -266,11 +268,25 @@ async function loadClasses(preferredClassId = null) {
 
         classes = result.classes || [];
 
+        classSelector.innerHTML = "";
+
+        // Handle an empty class list.
         if (classes.length === 0) {
-            throw new Error("No classes were found.");
+            selectedClassId = null;
+            events = {};
+
+            logout();
+
+            classSelector.disabled = true;
+            classStatus.textContent = "No classes available";
+
+            createCalendar();
+            renderNextDue();
+
+            return;
         }
 
-        classSelector.innerHTML = "";
+        classSelector.disabled = false;
 
         classes.forEach(item => {
             const option = document.createElement("option");
@@ -356,10 +372,13 @@ async function addClass() {
         return;
     }
 
-    if (values.password.length < 8 || values.password.length > 128) {
-        alert("Password must have atleast 8 characters.");
+    if (
+        values.password.length < 8 ||
+        values.password.length > 128
+    ) {
+        alert("Password must have at least 8 characters.");
         return;
-}
+    }
 
     if (!values.setupKey) {
         alert("Please enter the calendar setup key.");
@@ -386,7 +405,6 @@ async function addClass() {
 
         alert(result.message || "Class created successfully.");
 
-        // Switch to the newly created class.
         logout();
 
         selectedClassId = classId;
@@ -405,11 +423,105 @@ async function addClass() {
 }
 
 // ==========================================
+// DELETE CLASS
+// ==========================================
+
+async function deleteClass() {
+    if (!selectedClassId) {
+        alert("Please select a class first.");
+        return;
+    }
+
+    const selectedClass = classes.find(
+        item => item.id === selectedClassId
+    );
+
+    if (!selectedClass) {
+        alert("Could not find the selected class.");
+        return;
+    }
+
+    const confirmed = confirm(
+        `PERMANENTLY DELETE ${selectedClass.name}?\n\n` +
+        "This will permanently delete:\n" +
+        "- The class\n" +
+        "- All events in that class\n" +
+        "- The class password\n\n" +
+        "This action cannot be undone."
+    );
+
+    if (!confirmed) return;
+
+    const values = await passwordDialog(
+        "Delete Class",
+        [
+            {
+                name: "setupKey",
+                label: "Calendar setup key",
+                autocomplete: "off"
+            }
+        ]
+    );
+
+    if (!values) return;
+
+    if (!values.setupKey) {
+        alert("Please enter the calendar setup key.");
+        return;
+    }
+
+    deleteClassButton.disabled = true;
+    deleteClassButton.textContent = "DELETING...";
+
+    try {
+        const result = await apiRequest(
+            `/classes/${encodeURIComponent(selectedClassId)}`,
+            {
+                method: "DELETE",
+
+                headers: {
+                    "X-Setup-Key": values.setupKey
+                }
+            }
+        );
+
+        alert(
+            result.message ||
+            `${selectedClass.name} was deleted successfully.`
+        );
+
+        // Clear the current session and data.
+        logout();
+
+        events = {};
+
+        // Refresh the class list.
+        // If the deleted class was selected, another class is selected.
+        await loadClasses();
+
+    } catch (error) {
+        console.error(error);
+
+        alert(`Could not delete class: ${error.message}`);
+
+    } finally {
+        deleteClassButton.disabled = false;
+        deleteClassButton.textContent = "DELETE CLASS";
+    }
+}
+
+// ==========================================
 // LOAD EVENTS
 // ==========================================
 
 async function loadEvents() {
     events = {};
+
+    if (!selectedClassId) {
+        createCalendar();
+        renderNextDue();
+        return;
+    }
 
     classStatus.textContent = `Loading ${selectedClassId}...`;
 
@@ -517,6 +629,11 @@ function renderNextDue() {
 // ==========================================
 
 async function login() {
+    if (!selectedClassId) {
+        alert("Please select a class first.");
+        return false;
+    }
+
     const values = await passwordDialog(
         `Edit ${selectedClassId}`,
         [
@@ -570,13 +687,15 @@ function logout() {
 }
 
 function updateToolbar() {
-    editButton.hidden = editMode;
+    editButton.hidden = editMode || !selectedClassId;
     logoutButton.hidden = !editMode;
     changePasswordButton.hidden = !editMode;
 
-    classStatus.textContent = editMode
-        ? `${selectedClassId} · EDITING`
-        : `${selectedClassId} · VIEW ONLY`;
+    classStatus.textContent = selectedClassId
+        ? editMode
+            ? `${selectedClassId} · EDITING`
+            : `${selectedClassId} · VIEW ONLY`
+        : "No classes available";
 }
 
 // ==========================================
@@ -584,6 +703,8 @@ function updateToolbar() {
 // ==========================================
 
 async function changePassword() {
+    if (!editMode || !selectedClassId) return;
+
     const values = await passwordDialog(
         `Change ${selectedClassId} password`,
         [
@@ -593,18 +714,30 @@ async function changePassword() {
             },
             {
                 name: "newPassword",
-                label: "New password (minimum 10 characters)",
-                minLength: 10
+                label: "New password (minimum 8 characters)",
+                minLength: 8,
+                autocomplete: "new-password"
             },
             {
                 name: "confirmPassword",
                 label: "Confirm new password",
-                minLength: 10
+                minLength: 8,
+                autocomplete: "new-password"
             }
         ]
     );
 
     if (!values) return;
+
+    if (values.newPassword.length < 8) {
+        alert("New password must have at least 8 characters.");
+        return;
+    }
+
+    if (values.newPassword.length > 128) {
+        alert("New password cannot exceed 128 characters.");
+        return;
+    }
 
     if (values.newPassword !== values.confirmPassword) {
         alert("The new passwords do not match.");
@@ -656,7 +789,7 @@ function createCalendar() {
 
     const daysInMonth = new Date(year, month + 1, 0).getDate();
 
-    // Empty cells before the first day
+    // Empty cells before the first day.
 
     for (let i = 0; i < startingDay; i++) {
         const emptyDay = document.createElement("div");
@@ -666,7 +799,7 @@ function createCalendar() {
         calendar.appendChild(emptyDay);
     }
 
-    // Actual calendar days
+    // Actual calendar days.
 
     for (let day = 1; day <= daysInMonth; day++) {
         const dayElement = document.createElement("div");
@@ -691,7 +824,7 @@ function createCalendar() {
 
         dayElement.appendChild(dayNumber);
 
-        // Highlight today
+        // Highlight today.
 
         const today = new Date();
 
@@ -703,7 +836,7 @@ function createCalendar() {
             dayElement.classList.add("today");
         }
 
-        // Click a day to create an event
+        // Click a day to create an event.
 
         if (editMode) {
             dayElement.classList.add("editable-day");
@@ -713,7 +846,7 @@ function createCalendar() {
             });
         }
 
-        // Display events
+        // Display events.
 
         if (events[dateKey]) {
             events[dateKey].forEach(event => {
@@ -925,6 +1058,8 @@ classSelector.addEventListener("change", async () => {
 // ==========================================
 
 addClassButton.addEventListener("click", addClass);
+
+deleteClassButton.addEventListener("click", deleteClass);
 
 editButton.addEventListener("click", login);
 
