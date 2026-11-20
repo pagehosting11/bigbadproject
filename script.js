@@ -329,8 +329,8 @@ async function addClass() {
             },
             {
                 name: "password",
-                label: "Class password (minimum 10 characters)",
-                minLength: 10,
+                label: "Class password (minimum 8 characters)",
+                minLength: 8,
                 autocomplete: "new-password"
             },
             {
@@ -356,10 +356,10 @@ async function addClass() {
         return;
     }
 
-    if (values.password.length < 10) {
-        alert("Class password must contain at least 10 characters.");
+    if (values.password.length < 8 || values.password.length > 128) {
+        alert("Password must have atleast 8 characters.");
         return;
-    }
+}
 
     if (!values.setupKey) {
         alert("Please enter the calendar setup key.");
