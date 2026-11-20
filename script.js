@@ -133,7 +133,7 @@ toolbar.innerHTML = `
         </button>
 
         <button id="editButton" type="button">
-            EDIT
+            EDIT CALENDAR
         </button>
 
         <button
