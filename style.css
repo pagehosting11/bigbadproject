@@ -833,3 +833,12 @@ body {
 .calendar-container {
     background: #ffffff;
 }
+/* ADD CLASS & DELETE CLASS BUTTON FONT */
+
+#calendarToolbar #addClassButton,
+#calendarToolbar #deleteClassButton {
+    font-family: 'Inter', sans-serif;
+    font-weight: 1000;
+    letter-spacing: 0.5px;
+    text-align: center;
+}
