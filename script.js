@@ -123,7 +123,17 @@ toolbar.innerHTML = `
     </div>
 
     <div class="toolbar-right">
-        <button id="editButton" type="button">EDIT</button>
+
+        <button
+            id="addClassButton"
+            type="button"
+        >
+            + ADD CLASS
+        </button>
+
+        <button id="editButton" type="button">
+            EDIT
+        </button>
 
         <button
             id="changePasswordButton"
@@ -140,6 +150,7 @@ toolbar.innerHTML = `
         >
             LOG OUT
         </button>
+
     </div>
 `;
 
@@ -148,8 +159,10 @@ sidebarControls.appendChild(toolbar);
 const classSelector = document.getElementById("classSelector");
 const classStatus = document.getElementById("classStatus");
 
+const addClassButton = document.getElementById("addClassButton");
 const editButton = document.getElementById("editButton");
 const logoutButton = document.getElementById("logoutButton");
+
 const changePasswordButton =
     document.getElementById("changePasswordButton");
 
@@ -178,10 +191,15 @@ function passwordDialog(title, fields) {
 
             const input = document.createElement("input");
 
-            input.type = "password";
+            input.type = field.type || "password";
             input.required = true;
             input.minLength = field.minLength || 1;
-            input.autocomplete = "off";
+            input.maxLength = field.maxLength || 128;
+            input.autocomplete = field.autocomplete || "off";
+
+            if (field.pattern) {
+                input.pattern = field.pattern;
+            }
 
             inputs[field.name] = input;
 
@@ -240,7 +258,7 @@ function passwordDialog(title, fields) {
 // LOAD CLASSES
 // ==========================================
 
-async function loadClasses() {
+async function loadClasses(preferredClassId = null) {
     try {
         classStatus.textContent = "Loading classes...";
 
@@ -263,8 +281,15 @@ async function loadClasses() {
             classSelector.appendChild(option);
         });
 
-        selectedClassId = classes.some(item => item.id === "10A8")
-            ? "10A8"
+        const targetClass =
+            preferredClassId ||
+            selectedClassId ||
+            "10A8";
+
+        selectedClassId = classes.some(
+            item => item.id === targetClass
+        )
+            ? targetClass
             : classes[0].id;
 
         classSelector.value = selectedClassId;
@@ -277,6 +302,105 @@ async function loadClasses() {
         classStatus.textContent = "Could not load classes";
 
         alert(error.message);
+    }
+}
+
+// ==========================================
+// ADD CLASS
+// ==========================================
+
+async function addClass() {
+    const values = await passwordDialog(
+        "Add New Class",
+        [
+            {
+                name: "classId",
+                label: "Class ID (e.g. 10A10)",
+                type: "text",
+                minLength: 1,
+                autocomplete: "off"
+            },
+            {
+                name: "name",
+                label: "Class name",
+                type: "text",
+                minLength: 1,
+                autocomplete: "off"
+            },
+            {
+                name: "password",
+                label: "Class password (minimum 10 characters)",
+                minLength: 10,
+                autocomplete: "new-password"
+            },
+            {
+                name: "setupKey",
+                label: "Calendar setup key",
+                autocomplete: "off"
+            }
+        ]
+    );
+
+    if (!values) return;
+
+    const classId = values.classId.trim();
+    const name = values.name.trim();
+
+    if (!/^[A-Za-z0-9_-]{1,40}$/.test(classId)) {
+        alert("Invalid class ID. Use letters, numbers, - or _.");
+        return;
+    }
+
+    if (!name || name.length > 60) {
+        alert("Class name must be between 1 and 60 characters.");
+        return;
+    }
+
+    if (values.password.length < 10) {
+        alert("Class password must contain at least 10 characters.");
+        return;
+    }
+
+    if (!values.setupKey) {
+        alert("Please enter the calendar setup key.");
+        return;
+    }
+
+    addClassButton.disabled = true;
+    addClassButton.textContent = "CREATING...";
+
+    try {
+        const result = await apiRequest("/classes", {
+            method: "POST",
+
+            headers: {
+                "X-Setup-Key": values.setupKey
+            },
+
+            body: {
+                classId,
+                name,
+                password: values.password
+            }
+        });
+
+        alert(result.message || "Class created successfully.");
+
+        // Switch to the newly created class.
+        logout();
+
+        selectedClassId = classId;
+
+        await loadClasses(classId);
+
+    } catch (error) {
+        console.error(error);
+
+        alert(`Could not create class: ${error.message}`);
+
+    } finally {
+        addClassButton.disabled = false;
+        addClassButton.textContent = "+ ADD CLASS";
     }
 }
 
@@ -373,11 +497,11 @@ function renderNextDue() {
 
         const type = document.createElement("div");
 
-type.className =
-    "upcoming-type " +
-    (event.type === "EVENT"
-        ? "general-event"
-        : event.type.toLowerCase());
+        type.className =
+            "upcoming-type " +
+            (event.type === "EVENT"
+                ? "general-event"
+                : event.type.toLowerCase());
 
         type.textContent =
             EVENT_TYPES[event.type]?.label || event.type;
@@ -799,6 +923,8 @@ classSelector.addEventListener("change", async () => {
 // ==========================================
 // BUTTON EVENTS
 // ==========================================
+
+addClassButton.addEventListener("click", addClass);
 
 editButton.addEventListener("click", login);
 
