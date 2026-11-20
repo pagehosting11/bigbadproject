@@ -815,3 +815,21 @@ button, input, select, textarea {
     cursor: not-allowed;
     transform: none;
 }
+/* CYAN GRADIENT BACKGROUND */
+
+body {
+    background: linear-gradient(
+        135deg,
+        #dffaff 0%,
+        #c9f3f8 45%,
+        #e8fbff 100%
+    );
+    background-attachment: fixed;
+}
+
+/* Keep the sidebar and calendar cards white */
+
+.sidebar,
+.calendar-container {
+    background: #ffffff;
+}
