@@ -842,3 +842,21 @@ body {
     letter-spacing: 0.5px;
     text-align: center;
 }
+/* DARK BLUE GRADIENT BACKGROUND */
+
+body {
+    background: linear-gradient(
+        135deg,
+        #071b45 0%,
+        #123b78 45%,
+        #2468a8 100%
+    );
+    background-attachment: fixed;
+}
+
+/* KEEP CONTENT CARDS WHITE */
+
+.sidebar,
+.calendar-container {
+    background: #ffffff;
+}
